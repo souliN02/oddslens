@@ -15,21 +15,23 @@ Neon Postgres · Zod · Recharts · Vitest · GitHub Actions + Vercel.
 
 ## Local setup
 
+Uses [pnpm](https://pnpm.io) (pinned via the `packageManager` field).
+
 ```bash
-npm install
+pnpm install
 cp .env.example .env   # fill in values as later phases need them
-npm run dev            # http://localhost:3000
+pnpm dev               # http://localhost:3000
 ```
 
 ## Scripts
 
 ```bash
-npm run dev          # local dev server
-npm run build        # production build
-npm run lint         # eslint
-npm run typecheck    # tsc --noEmit
-npm test             # vitest run
-npm run format       # prettier --write .
+pnpm dev             # local dev server
+pnpm build           # production build
+pnpm lint            # eslint
+pnpm typecheck       # tsc --noEmit
+pnpm test            # vitest run
+pnpm format          # prettier --write .
 ```
 
 ## Disclaimer

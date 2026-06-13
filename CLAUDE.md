@@ -4,20 +4,22 @@ Football odds tracker. Full product spec lives in `SPEC.md` - read it before any
 
 ## Commands
 
+Package manager: **pnpm** (Vercel uses pnpm; pinned via the `packageManager` field).
+
 ```
-npm run dev          # local dev server
-npm run build        # production build
-npm run lint         # eslint
-npm run typecheck    # tsc --noEmit
-npm test             # vitest run
-npm run db:generate  # drizzle-kit generate migrations
-npm run db:migrate   # apply migrations
-npm run db:seed      # seed local/dev DB from tests/fixtures/odds-response.json
+pnpm dev             # local dev server
+pnpm build           # production build
+pnpm lint            # eslint
+pnpm typecheck       # tsc --noEmit
+pnpm test            # vitest run
+pnpm db:generate     # drizzle-kit generate migrations
+pnpm db:migrate      # apply migrations
+pnpm db:seed         # seed local/dev DB from tests/fixtures/odds-response.json
 ```
 
 ## Definition of done (every task)
 
-1. `npm run typecheck`, `npm run lint`, and `npm test` all pass locally
+1. `pnpm typecheck`, `pnpm lint`, and `pnpm test` all pass locally
 2. New logic has tests (odds math is always test-first)
 3. UI changes handle loading, empty, and error states
 4. Commit with a conventional commit message (`feat:`, `fix:`, `test:`, `chore:`, `docs:`)
