@@ -3,6 +3,7 @@ import {
   getLastSnapshotAt,
   getLatestSnapshotsForMatches,
   getLeagues,
+  getNextUpcomingMatches,
   getUpcomingMatches,
 } from "@/db/queries";
 import { summarizeMatch } from "@/lib/odds-math";
@@ -30,9 +31,20 @@ export default async function Home({
       ? leagueParam
       : null;
 
-  const matches = await getUpcomingMatches({
+  const upcoming = await getUpcomingMatches({
     leagueKey: activeLeague ?? undefined,
   });
+  // Between seasons the next-7-days window can be empty while the DB still holds
+  // fresh odds for fixtures further out; fall back to the nearest scheduled
+  // matches so the dashboard is never blank.
+  const showingNextFixtures = upcoming.length === 0;
+  const matches = showingNextFixtures
+    ? await getNextUpcomingMatches({
+        leagueKey: activeLeague ?? undefined,
+        limit: 10,
+      })
+    : upcoming;
+
   const latestByMatch = await getLatestSnapshotsForMatches(
     matches.map((m) => m.id),
   );
@@ -55,6 +67,7 @@ export default async function Home({
       leagues={leagues}
       activeLeague={activeLeague}
       lastSnapshotAt={lastSnapshotAt}
+      showingNextFixtures={showingNextFixtures}
     />
   );
 }

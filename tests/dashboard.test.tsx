@@ -101,4 +101,20 @@ describe("Dashboard", () => {
       ),
     ).toBeInTheDocument();
   });
+
+  it("notes when it is showing next fixtures because the 7-day window is empty", () => {
+    renderDashboard({ showingNextFixtures: true });
+    expect(
+      screen.getByText(/showing the next scheduled fixtures/i),
+    ).toBeInTheDocument();
+    // The matches themselves still render.
+    expect(screen.getByText(/Arsenal/)).toBeInTheDocument();
+  });
+
+  it("omits the next-fixtures note in the normal next-7-days window", () => {
+    renderDashboard();
+    expect(
+      screen.queryByText(/showing the next scheduled fixtures/i),
+    ).not.toBeInTheDocument();
+  });
 });
