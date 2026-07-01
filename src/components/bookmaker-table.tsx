@@ -66,7 +66,7 @@ export function BookmakerTable({ rows, consensus, now }: BookmakerTableProps) {
   if (rows.length === 0) {
     return (
       <div className="rounded-lg border border-border bg-card p-8 text-center text-sm text-muted-foreground">
-        No odds captured yet — the cron runs every 3 hours.
+        No odds captured yet — the cron runs every 4 hours.
       </div>
     );
   }

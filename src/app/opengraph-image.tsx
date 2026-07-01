@@ -71,7 +71,7 @@ export default function OpengraphImage() {
             Bookmaker odds, de-vigged into consensus fair value.
           </div>
           <div style={{ display: "flex", fontSize: 26, color: MUTED }}>
-            Snapshotted every 3 hours · no-vig probabilities ·{" "}
+            Snapshotted every 4 hours · no-vig probabilities ·{" "}
             <span style={{ color: GREEN, marginLeft: 8 }}>value flags</span>
           </div>
         </div>

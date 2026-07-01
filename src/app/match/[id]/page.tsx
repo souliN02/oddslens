@@ -92,7 +92,7 @@ export default async function MatchPage({
 
       {snapshots.length === 0 ? (
         <div className="rounded-lg border border-border bg-card p-8 text-center text-sm text-muted-foreground">
-          No odds captured yet — the cron runs every 3 hours.
+          No odds captured yet — the cron runs every 4 hours.
         </div>
       ) : (
         <div className="space-y-8">

@@ -7,14 +7,14 @@ import {
 } from "@/lib/odds-api";
 
 // Mutating route: never prerendered, runs on Node, and may take a few seconds to
-// fetch both leagues and write to Neon.
+// fetch every configured league and write to Neon.
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
 /**
  * POST /api/cron/snapshot — the only mutating endpoint (SPEC §9). Protected by a
- * bearer secret. Fetches h2h odds for both leagues, validates + upserts, logs the
+ * bearer secret. Fetches h2h odds for every configured league, validates + upserts, logs the
  * remaining API credits, and returns a summary. Safe to retry: the unique
  * snapshot index makes duplicate runs harmless.
  */

@@ -58,7 +58,7 @@ export function Dashboard({
   // distinct empty states (SPEC §8).
   const emptyMessage =
     lastSnapshotAt === null
-      ? "First snapshot pending — the cron runs every 3 hours."
+      ? "First snapshot pending — the cron runs every 4 hours."
       : `No upcoming matches in the next 7 days${
           activeLeagueTitle ? ` for ${activeLeagueTitle}` : ""
         }.`;
