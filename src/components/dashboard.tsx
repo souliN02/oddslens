@@ -9,6 +9,9 @@ export type DashboardProps = {
   leagues: { key: string; title: string }[];
   activeLeague: string | null;
   lastSnapshotAt: Date | null;
+  /** True when `matches` are the nearest fixtures shown because the next-7-days
+   * window was empty (off-season) — the list carries an explanatory note. */
+  showingNextFixtures?: boolean;
   /** Injectable for deterministic "X ago" text in tests. */
   now?: Date;
 };
@@ -43,6 +46,7 @@ export function Dashboard({
   leagues,
   activeLeague,
   lastSnapshotAt,
+  showingNextFixtures = false,
   now,
 }: DashboardProps) {
   const activeLeagueTitle =
@@ -104,11 +108,18 @@ export function Dashboard({
           {emptyMessage}
         </div>
       ) : (
-        <ul className="space-y-2">
-          {matches.map((match) => (
-            <MatchCard key={match.id} match={match} />
-          ))}
-        </ul>
+        <>
+          {showingNextFixtures && (
+            <p className="mb-4 rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+              No matches in the next 7 days — showing the next scheduled fixtures.
+            </p>
+          )}
+          <ul className="space-y-2">
+            {matches.map((match) => (
+              <MatchCard key={match.id} match={match} />
+            ))}
+          </ul>
+        </>
       )}
     </main>
   );

@@ -52,6 +52,41 @@ export async function getUpcomingMatches(
     .orderBy(asc(matches.commenceTime));
 }
 
+/**
+ * The next matches kicking off from `now`, ignoring the 7-day window, ordered by
+ * kickoff and capped at `limit`. The dashboard falls back to this when nothing is
+ * upcoming in the next 7 days (e.g. between seasons) so the page is never empty.
+ */
+export async function getNextUpcomingMatches(
+  options: {
+    leagueKey?: string;
+    now?: Date;
+    limit?: number;
+  } = {},
+): Promise<UpcomingMatch[]> {
+  const now = options.now ?? new Date();
+
+  const conditions = [gte(matches.commenceTime, now)];
+  if (options.leagueKey) {
+    conditions.push(eq(matches.leagueKey, options.leagueKey));
+  }
+
+  return getDb()
+    .select({
+      id: matches.id,
+      homeTeam: matches.homeTeam,
+      awayTeam: matches.awayTeam,
+      commenceTime: matches.commenceTime,
+      leagueKey: matches.leagueKey,
+      leagueTitle: leagues.title,
+    })
+    .from(matches)
+    .leftJoin(leagues, eq(matches.leagueKey, leagues.key))
+    .where(and(...conditions))
+    .orderBy(asc(matches.commenceTime))
+    .limit(options.limit ?? 10);
+}
+
 /** All leagues that have been seeded/ingested, for the dashboard filter. */
 export async function getLeagues(): Promise<{ key: string; title: string }[]> {
   return getDb()
