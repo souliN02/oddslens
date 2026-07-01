@@ -1,12 +1,13 @@
 name: Snapshot
 
-# Snapshots odds every 3 hours = 8 runs/day x 2 credits = ~480 credits/month,
-# inside The Odds API free tier (SPEC §4). GitHub's scheduler can drift a few
-# minutes, which is fine here. Adjust the cron (e.g. every 4 hours) if credits
-# run low.
+# Snapshots odds every 4 hours = 6 runs/day. Off-tournament that is 2 credits/run
+# (EPL + Superliga) ≈ 360/month; while the World Cup has fixtures it is 3
+# credits/run, which still fits The Odds API's 500/month free tier for the ~3
+# weeks it runs (SPEC §4). GitHub's scheduler can drift a few minutes, which is
+# fine here. Widen the cron (e.g. every 6 hours) if credits run low.
 on:
   schedule:
-    - cron: "0 */3 * * *"
+    - cron: "0 */4 * * *"
   workflow_dispatch:
 
 jobs:

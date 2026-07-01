@@ -8,7 +8,7 @@ A self-hosted football odds tracker that snapshots bookmaker odds over time, com
 
 ## 1. Portfolio narrative (why this project exists)
 
-Free odds APIs only give you _current_ odds. Historical odds data is paywalled (The Odds API charges 10x credits for historical endpoints). So this app creates its own historical dataset: a scheduled job snapshots odds every 3 hours, stores them in Postgres, and the frontend turns that time-series into insight (odds movement charts, bookmaker margin analysis, value flags).
+Free odds APIs only give you _current_ odds. Historical odds data is paywalled (The Odds API charges 10x credits for historical endpoints). So this app creates its own historical dataset: a scheduled job snapshots odds every 4 hours, stores them in Postgres, and the frontend turns that time-series into insight (odds movement charts, bookmaker margin analysis, value flags).
 
 This is the story to tell in the README and in interviews: **a real data pipeline built under a real constraint (500 free API credits/month), not a CRUD demo.**
 
@@ -20,9 +20,9 @@ Disclaimer to include in the app footer and README: _"Educational analytics proj
 
 **In scope (v1):**
 
-- 2 leagues: English Premier League (`soccer_epl`) and Danish Superliga (`soccer_denmark_superliga`)
+- Core leagues: English Premier League (`soccer_epl`) and Danish Superliga (`soccer_denmark_superliga`), plus the FIFA World Cup (`soccer_fifa_world_cup`) while it is running (it costs nothing between tournaments — an empty response is billed as 0 credits)
 - 1 market: match winner / 1X2 (`h2h`), decimal odds, `eu` bookmaker region
-- Scheduled snapshot ingestion every 3 hours via GitHub Actions
+- Scheduled snapshot ingestion every 4 hours via GitHub Actions
 - Dashboard: upcoming matches with best available odds per outcome across bookmakers
 - Match detail page: odds movement chart over time, per-bookmaker comparison table
 - Value engine: implied probability, overround (vig), no-vig consensus, edge flags
@@ -58,14 +58,14 @@ The Odds API free tier: **500 credits/month**, reset on the 1st. One `/odds` cal
 
 Our usage:
 
-- 2 sport keys x 1 region (`eu`) x 1 market (`h2h`) = **2 credits per snapshot run**
-- Every 3 hours = 8 runs/day = **16 credits/day = ~480/month** -> fits with ~20 credits spare for manual testing
+- Sport keys x 1 region (`eu`) x 1 market (`h2h`) credits per snapshot run. Off-tournament that is **2 credits/run** (EPL + Superliga; the World Cup key returns empty = 0). While the World Cup has fixtures it is **3 credits/run**.
+- Every 4 hours = 6 runs/day. Off-tournament ≈ **12 credits/day ≈ 360/month**. While the World Cup is on (≈3 weeks) ≈ **18 credits/day**, so a World Cup month still lands around **~486** — inside the 500 free tier.
 
 Rules that follow from this:
 
 1. The snapshot endpoint logs `x-requests-remaining` and `x-requests-used` response headers on every run.
 2. **Development never calls the live API.** A real response is saved once as a fixture (`tests/fixtures/odds-response.json`) and used for all local dev and tests.
-3. If credits run low, the GitHub Actions schedule is the only knob to turn (e.g. every 4 hours = 360/month).
+3. If credits run low, the GitHub Actions schedule is the only knob to turn (e.g. every 6 hours).
 
 ---
 
@@ -73,7 +73,7 @@ Rules that follow from this:
 
 ```mermaid
 flowchart LR
-  GHA[GitHub Actions cron - every 3h] -->|POST + Bearer CRON_SECRET| SNAP["/api/cron/snapshot"]
+  GHA[GitHub Actions cron - every 4h] -->|POST + Bearer CRON_SECRET| SNAP["/api/cron/snapshot"]
   SNAP -->|fetch h2h odds, 2 leagues| ODDS[The Odds API]
   SNAP -->|Zod validate + upsert| DB[(Neon Postgres)]
   WEB[Next.js server components] --> DB
@@ -147,7 +147,7 @@ Edge cases the tests must cover: fewer than 3 bookmakers, odds of exactly 1.0 or
 - Upcoming matches (next 7 days), grouped or filterable by league
 - Per match: kickoff time (Europe/Copenhagen), best odds per outcome with the bookmaker name, lowest overround, value badges where edge >= 3%
 - "Last snapshot: X minutes ago" indicator
-- States: loading skeletons, empty state ("First snapshot pending - the cron runs every 3 hours"), error boundary
+- States: loading skeletons, empty state ("First snapshot pending - the cron runs every 4 hours"), error boundary
 
 **`/match/[id]` Detail**
 

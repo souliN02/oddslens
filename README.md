@@ -3,7 +3,7 @@
 [![CI](https://github.com/souliN02/linedrift/actions/workflows/ci.yml/badge.svg)](https://github.com/souliN02/linedrift/actions/workflows/ci.yml)
 
 **A football odds tracker that builds its own historical dataset** — snapshotting
-bookmaker odds every 3 hours, computing no-vig consensus probabilities, and
+bookmaker odds every 4 hours, computing no-vig consensus probabilities, and
 flagging prices that beat the market.
 
 **Live demo → https://linedrift.vercel.app** · **How it works → [/about](https://linedrift.vercel.app/about)**
@@ -17,7 +17,8 @@ budget, not a CRUD demo.
 
 ## Features
 
-- **Odds snapshots every 3 hours** into Postgres via a scheduled GitHub Actions job.
+- **Odds snapshots every 4 hours** — Premier League, Danish Superliga, and the
+  FIFA World Cup while it's on — into Postgres via a scheduled GitHub Actions job.
 - **Dashboard** of upcoming matches with best available price per outcome, the
   offering bookmaker, lowest overround, and value badges.
 - **Match detail** with a Recharts odds-movement chart (line per bookmaker,
@@ -35,7 +36,7 @@ budget, not a CRUD demo.
 
 ```mermaid
 flowchart LR
-  GHA[GitHub Actions cron - every 3h] -->|POST + Bearer CRON_SECRET| SNAP["/api/cron/snapshot"]
+  GHA[GitHub Actions cron - every 4h] -->|POST + Bearer CRON_SECRET| SNAP["/api/cron/snapshot"]
   SNAP -->|fetch h2h odds, 2 leagues| ODDS[The Odds API]
   SNAP -->|Zod validate + upsert| DB[(Neon Postgres)]
   WEB[Next.js server components] --> DB
@@ -123,10 +124,11 @@ rows land in Neon and credits are logged in the Vercel function logs.
 ## Engineering decisions
 
 - **Snapshots instead of a paywalled historical API.** The Odds API charges 10×
-  for history. Recording the live `h2h` market for two leagues costs
-  `regions × markets` = 2 credits/run; every 3 hours is 8 runs/day ≈ **480 of the
-  free tier's 500 credits/month**, leaving ~20 for manual testing. The schedule is
-  the single knob — every 4 hours drops it to ~360/month.
+  for history. Recording the live `h2h` market costs `regions × markets` credits
+  per league per run — 2 off-season (EPL + Superliga) and 3 while the FIFA World
+  Cup has fixtures (its key bills 0 between tournaments). Every 4 hours is 6
+  runs/day ≈ **360 of the free tier's 500 credits/month**, rising to ~486 in a
+  World Cup month — still inside the tier. The schedule is the single knob.
 - **Zod at the boundary.** All external JSON is parsed and validated in
   [`src/lib/odds-api.ts`](src/lib/odds-api.ts) before touching the app, so a
   provider change (or a malformed payload) is contained to one file.
@@ -139,7 +141,7 @@ rows land in Neon and credits are logged in the Vercel function logs.
   table-driven tests (implied, overround, no-vig, consensus, edge, best price),
   covering edge cases like fewer than three bookmakers and missing draw prices.
 - **GitHub Actions as the scheduler, not Vercel Cron.** Vercel's Hobby plan caps
-  cron at one run per day; the pipeline needs every 3 hours, so the schedule lives
+  cron at one run per day; the pipeline needs every 4 hours, so the schedule lives
   in GitHub Actions (a few minutes of drift is fine here).
 - **Server components read the DB directly.** No client data fetching for the
   initial render; interactivity (chart toggles) is the only client-side code.

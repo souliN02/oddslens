@@ -44,11 +44,16 @@ export function parseOddsResponse(raw: unknown): OddsEvent[] {
   return oddsResponseSchema.parse(raw);
 }
 
-// The Odds API sport keys for the two MVP leagues (SPEC §2). One `/odds` call
-// per key x 1 region x 1 market = 2 credits per snapshot run (SPEC §4).
+// The Odds API sport keys we snapshot. EPL + Danish Superliga are the core
+// leagues; the FIFA World Cup is included while it's on — between tournaments the
+// key returns no events, which The Odds API bills as 0 credits. One `/odds` call
+// per key x 1 region x 1 market, so a run costs 2 credits off-tournament and 3
+// while the World Cup has fixtures. The cron runs every 4h to stay under the
+// 500/month free tier (SPEC §4).
 export const SPORT_KEYS = [
   "soccer_epl",
   "soccer_denmark_superliga",
+  "soccer_fifa_world_cup",
 ] as const;
 
 const ODDS_API_BASE = "https://api.the-odds-api.com/v4";

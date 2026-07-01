@@ -137,7 +137,7 @@ export default function AboutPage() {
         <p className="mt-3 max-w-prose text-sm leading-relaxed text-muted-foreground">
           Free odds APIs only give you the <em>current</em> price. History is
           paywalled. So LineDrift builds its own dataset — snapshotting bookmaker
-          odds every three hours — and turns that time series into no-vig
+          odds every four hours — and turns that time series into no-vig
           consensus probabilities and value flags. It is a data pipeline built
           under a real constraint, not a CRUD demo.
         </p>
@@ -151,9 +151,11 @@ export default function AboutPage() {
             historical endpoints cost 10× the live ones. Rather than pay for
             history, LineDrift manufactures it: a scheduled job records the{" "}
             <span className="text-foreground">match-winner (1X2)</span> market
-            for the <span className="text-foreground">Premier League</span> and{" "}
-            <span className="text-foreground">Danish Superliga</span> in decimal
-            odds across EU bookmakers, and stores every reading in Postgres.
+            for the <span className="text-foreground">Premier League</span>,{" "}
+            <span className="text-foreground">Danish Superliga</span>, and — while
+            it is on — the{" "}
+            <span className="text-foreground">FIFA World Cup</span> in decimal odds
+            across EU bookmakers, and stores every reading in Postgres.
           </p>
           <p>
             The whole project is designed around that ceiling — which is exactly
@@ -165,9 +167,9 @@ export default function AboutPage() {
         <Section eyebrow="Architecture" title="From cron to chart">
           <div className="mt-1 space-y-5 text-foreground">
             <div>
-              <p className="eyebrow mb-2">Ingest · every 3 hours</p>
+              <p className="eyebrow mb-2">Ingest · every 4 hours</p>
               <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
-                <Node title="GitHub Actions" sub="cron, every 3h" />
+                <Node title="GitHub Actions" sub="cron, every 4h" />
                 <Arrow />
                 <Node title="/api/cron/snapshot" sub="bearer-auth route" />
                 <Arrow />
@@ -319,21 +321,22 @@ export default function AboutPage() {
           <p>
             One snapshot costs{" "}
             <span className="text-foreground">regions × markets</span> credits
-            per league. At one region and one market across two leagues, that is
-            two credits a run — and the schedule is sized to fit the month with
-            room to spare.
+            per league — two credits a run for the domestic leagues, three while
+            the World Cup has fixtures (its key bills nothing between
+            tournaments). Running every four hours keeps even a World Cup month
+            inside the free tier.
           </p>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <Stat value="2" label="credits / run" />
-            <Stat value="8" label="runs / day" />
-            <Stat value="~480" label="credits / month" />
-            <Stat value="~20" label="spare" />
+            <Stat value="6" label="runs / day" />
+            <Stat value="2–3" label="credits / run" />
+            <Stat value="~360" label="typical / month" />
+            <Stat value="500" label="free tier" />
           </div>
           <p>
-            If credits run low, the only knob is the GitHub Actions schedule —
-            every four hours instead of three drops usage to ~360 a month.
-            Development and tests never touch the live API; a single saved
-            response fixture powers all of it.
+            Off-season a run is two credits, so usage sits near ~360 a month; a
+            World Cup month rises to ~486 — still under 500. Development and tests
+            never touch the live API; a single saved response fixture powers all
+            of it, and the schedule is the only knob if credits run low.
           </p>
         </Section>
       </div>
